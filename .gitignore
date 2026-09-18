@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+dist/
+build/
+.env
+.env.*
+!.env.example
+
+# Never commit collected/private data
+corpus/
+*.mbox
+*.mbx
+*.eml
+.dws/
+attachments/
+exports/
+secrets/
+
+# Local configuration
+24hmyself.local.json

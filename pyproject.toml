@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "24hmyself"
+version = "0.1.0"
+description = "Privacy-first collectors for officially authorized enterprise data"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "24hmyself contributors"}]
+dependencies = [
+  "httpx>=0.27,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<9",
+]
+
+[project.scripts]
+24hmyself = "twentyfour_myself.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/twentyfour_myself"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"

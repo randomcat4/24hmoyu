@@ -1,6 +1,6 @@
 # Security policy
 
-24hmyself handles potentially sensitive enterprise and personal data. Treat a collected corpus as private by default.
+24hmoyu handles potentially sensitive enterprise and personal data. Treat a collected corpus as private by default.
 
 ## Supported collection rules
 

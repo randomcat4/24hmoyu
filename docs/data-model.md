@@ -1,6 +1,6 @@
 # Corpus data model
 
-24hmyself keeps the normalized schema intentionally small so downstream distillation does not depend on vendor payloads.
+24hmoyu keeps the normalized schema intentionally small so downstream distillation does not depend on vendor payloads.
 
 ## Message
 

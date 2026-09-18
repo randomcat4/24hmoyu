@@ -1,377 +1,44 @@
-# 24hmyself
+# 24hmoyu
 
-A privacy-first, local-first collector layer for turning **officially authorized enterprise data** into a normalized local corpus.
+把散落在邮件、飞书和钉钉里的工作记录收回来，整理成自己的资料库，再交给技能继续加工。
 
-24hmyself is intentionally narrower than a "digital immortality" system. Its job is to answer three questions reliably:
+我们现在能干这些事：
 
-1. what data can be read through an official interface;
-2. who must authorize that read;
-3. how to normalize the result without leaking provider-specific details downstream.
+- **收工作资料**：读取你主动导出的邮箱文件，也能通过官方授权读取飞书、钉钉里的消息、文档和部分附件。
+- **整理成统一资料库**：不同来源的内容会被整理成统一格式，方便后续搜索、总结和再利用。
+- **自动写周报**：把流水账、聊天记录、提交记录或几句口语变成结构清楚的中文周报。
+- **按心情选周报风格**：默认是简洁靠谱的正经版；赶时间可以用省事模板；明确要求时也能生成“某厂味”娱乐版。
+- **把数据留在本地**：资料默认写入本地目录，不把访问令牌和应用密钥混进资料库。
 
-```text
-Feishu official OpenAPI
-          │
-DingTalk DWS / documented OpenAPI
-          │
-Email mbox exports
-          │
-          ▼
-   BaseCollector adapters
-          │
-          ▼
-Message / Document / Attachment
-          │
-          ▼
-      local corpus
-          │
-          ▼
-downstream distillation / skills / memory
-```
-
-This repository is an independent implementation. It is not a GitHub fork and does not copy credential/session extraction techniques from chat clients.
-
-## Safety boundary
-
-24hmyself accepts only:
-
-- documented official APIs;
-- documented official authorization flows;
-- user-initiated local exports such as mbox.
-
-It deliberately does **not** use:
-
-- Playwright/Selenium to scrape authenticated chat pages;
-- browser cookies or copied browser login state;
-- local WeChat/DingTalk/Feishu chat databases;
-- undocumented private endpoints;
-- techniques that bypass enterprise administrator approval;
-- silent device/account collection.
-
-If a provider says an enterprise administrator must approve a capability, the collector reports that boundary instead of trying to work around it.
-
-## What is implemented
+## 周报怎么用
 
-| Source | Messages | Documents | Files / attachments | Authorization model |
-|---|---|---|---|---|
-| Email mbox | Yes | — | Yes | user-provided file |
-| Feishu OpenAPI | explicit-chat history | docx raw content | message resources + ordinary Drive files | official access token; effective app/document permissions apply |
-| DingTalk DWS | group/direct/cross-conversation history | online docs | Drive files; chat resource IDs are recorded conservatively | DWS organization access must be enabled/approved |
-
-See [`docs/authorization-matrix.md`](docs/authorization-matrix.md) for the deliberately conservative capability matrix.
-
-## Current DingTalk conclusion
-
-DingTalk DWS provides real historical-message capabilities, including group/direct history and message search. However, DWS itself requires organization-level CLI access to be enabled or approved.
-
-Therefore 24hmyself does **not** treat "a normal employee OAuths once and bulk-downloads all DingTalk chats/docs" as a public capability.
-
-Without administrator approval, ordinary OpenAPI/JSAPI capabilities must be evaluated endpoint by endpoint. They are not assumed to be equivalent to Workspace/DWS historical-data access.
-
-See [`docs/dingtalk.md`](docs/dingtalk.md).
-
-## Installation
+周报技能放在 [`skills/zhoubao`](skills/zhoubao)。把这周做过的事直接丢给它即可，不需要先整理格式。
 
-Python 3.11+:
-
-```bash
-git clone https://github.com/randomcat4/24hmyself.git
-cd 24hmyself
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e '.[dev]'
-```
+例如：
 
-Run tests:
+> 这周修了登录问题，做完支付页改版，和运营开了两次需求会。下周准备开始做数据看板。
 
-```bash
-pytest
-```
+它会自动整理成本周完成、进行中、卡点和下周计划。你也可以说“简版”“省事版”或“黑话版”；没有明确要求时，它不会擅自写成黑话。
 
-Inspect the capability matrix:
+## 资料能从哪里来
 
-```bash
-24hmyself capabilities
-24hmyself capabilities --json
-```
+| 来源 | 能做什么 |
+|---|---|
+| 邮箱导出的 mbox 文件 | 整理邮件正文和附件 |
+| 飞书官方接口 | 读取指定会话、文档和有权限的文件 |
+| 钉钉官方 DWS 能力 | 读取获准访问的群聊、私聊、文档和网盘文件 |
 
-## Local corpus
+我们只使用官方接口、官方授权流程和你主动提供的导出文件。需要管理员批准的权限会如实提示，不会绕过权限，也不会读取浏览器登录状态或本地聊天数据库。
 
-Every collector writes the same source-independent records:
+## 想继续了解
 
-```text
-Message
-├── source
-├── external_id
-├── channel_id
-├── sender_id / sender_name
-├── timestamp
-├── text
-├── attachment_refs[]
-└── metadata
-
-Document
-├── source
-├── external_id
-├── title
-├── content
-├── owner_id
-├── created_at / updated_at
-├── attachment_refs[]
-└── metadata
-
-Attachment
-├── source
-├── external_id
-├── filename
-├── mime_type
-├── size
-├── local_path
-├── parent_ref
-└── metadata
-```
+- [权限和能力说明](docs/authorization-matrix.md)
+- [飞书接入说明](docs/feishu.md)
+- [钉钉接入说明](docs/dingtalk.md)
+- [常用命令示例](examples/commands.md)
 
-Corpus layout:
+项目目前仍在成长中。先把自己的工作资料安全、规整地收回来，再慢慢增加总结、记忆和更多实用技能。
 
-```text
-corpus/
-├── records.jsonl
-├── manifest.json
-└── attachments/
-```
+## 许可证
 
-Records are de-duplicated by:
-
-```text
-<source>:<kind>:<external_id>
-```
-
-The corpus contains normalized data, not access tokens or application secrets.
-
-## Email: mbox
-
-Recommended low-risk first path:
-
-```text
-Gmail Takeout / Thunderbird / another explicit export
-                         │
-                         ▼
-                        mbox
-                         │
-                         ▼
-                   MboxCollector
-```
-
-Run:
-
-```bash
-24hmyself collect mbox ~/Downloads/mail.mbox --output ./corpus
-```
-
-Attachments are extracted locally by default. Disable extraction with:
-
-```bash
-24hmyself collect mbox ~/Downloads/mail.mbox \
-  --no-attachments \
-  --output ./corpus
-```
-
-Live Gmail/Outlook OAuth is intentionally deferred until its authorization, pagination, attachment behavior, and refresh-token storage are implemented and tested as a separate adapter.
-
-## Feishu
-
-The Feishu collector uses official OpenAPI endpoints for:
-
-- historical messages in explicitly supplied chat IDs;
-- message resource downloads;
-- docx plain-text content;
-- ordinary Drive file downloads.
-
-See [`docs/feishu.md`](docs/feishu.md) for endpoint details.
-
-### Authentication
-
-Option A: provide an access token already obtained through an official flow:
-
-```bash
-export FEISHU_ACCESS_TOKEN='...'
-```
-
-Option B: internal enterprise app credentials, exchanged through Feishu's official tenant-token endpoint:
-
-```bash
-export FEISHU_APP_ID='...'
-export FEISHU_APP_SECRET='...'
-```
-
-Never commit these values.
-
-### Collect
-
-```bash
-24hmyself collect feishu \
-  --chat oc_xxx \
-  --doc doxc_xxx \
-  --drive-file boxcn_xxx=report.pdf \
-  --download-message-attachments \
-  --output ./corpus
-```
-
-Message history is scoped to chat IDs you explicitly provide; this command is not an account-wide export primitive.
-
-## DingTalk DWS
-
-24hmyself delegates DingTalk credential handling to the officially open-sourced DingTalk Workspace CLI rather than reading DWS credential files itself.
-
-Install/configure DWS according to its upstream documentation:
-
-https://github.com/DingTalk-Real-AI/dingtalk-workspace-cli
-
-Authorize:
-
-```bash
-dws auth login
-dws auth status --format json
-```
-
-If the organization has not enabled DWS/CLI access, use DingTalk's official administrator approval flow. 24hmyself will stop rather than bypass it.
-
-Check from 24hmyself:
-
-```bash
-24hmyself dws-status
-```
-
-### Group history
-
-```bash
-24hmyself collect dingtalk \
-  --group cid_xxx \
-  --time '2026-01-01 00:00:00' \
-  --output ./corpus
-```
-
-### Direct-message history
-
-```bash
-24hmyself collect dingtalk \
-  --direct-user user123 \
-  --time '2026-01-01 00:00:00' \
-  --output ./corpus
-```
-
-or:
-
-```bash
-24hmyself collect dingtalk \
-  --direct-open-id DINGTALK_OPEN_ID \
-  --time '2026-01-01 00:00:00' \
-  --output ./corpus
-```
-
-### Cross-conversation window
-
-```bash
-24hmyself collect dingtalk \
-  --all-start '2026-09-01 00:00:00' \
-  --all-end '2026-09-02 00:00:00' \
-  --output ./corpus
-```
-
-### Documents and Drive files
-
-```bash
-24hmyself collect dingtalk \
-  --doc 'https://alidocs.dingtalk.com/i/nodes/xxx' \
-  --drive-file node_xxx \
-  --output ./corpus
-```
-
-The adapter uses `dws doc info/read` and `dws drive info/download`.
-
-### Chat attachment limitation
-
-DWS history reads can expose a lossy projection for some rich/card/file messages. 24hmyself records visible `fileId` / `resourceId` / `mediaId` values as unresolved attachment metadata, but does not claim that every historical chat attachment can be generically downloaded.
-
-That boundary is intentional: an incomplete official projection is safer than inventing a private download path.
-
-## Collector contract
-
-All collectors inherit the same boundary:
-
-```text
-BaseCollector
-    │
-    ├── MboxCollector
-    ├── FeishuCollector
-    └── DingTalkDWSCollector
-            │
-            ▼
-      normalized records
-            │
-            ▼
-        CorpusStore
-```
-
-Collectors own:
-
-- official authentication/authorization integration;
-- capability reporting;
-- pagination;
-- provider error handling;
-- permitted resource downloads;
-- normalization;
-- provenance metadata.
-
-Collectors do not own:
-
-- persona generation;
-- long-term memory synthesis;
-- skill generation;
-- model prompting/distillation.
-
-Those stages consume the corpus later.
-
-## Repository layout
-
-```text
-24hmyself/
-├── src/twentyfour_myself/
-│   ├── models.py
-│   ├── corpus.py
-│   ├── cli.py
-│   └── collectors/
-│       ├── base.py
-│       ├── mbox.py
-│       ├── feishu.py
-│       └── dingtalk_dws.py
-├── docs/
-│   ├── authorization-matrix.md
-│   ├── data-model.md
-│   ├── feishu.md
-│   └── dingtalk.md
-├── examples/
-│   └── commands.md
-├── tests/
-├── SECURITY.md
-├── CONTRIBUTING.md
-└── LICENSE
-```
-
-## Development rules
-
-- Unknown means unknown, not supported.
-- "Permission denied" is a normal product state, not a signal to bypass access control.
-- Never commit real tokens, mbox exports, chats, documents, attachments, or DWS credential state.
-- Add pagination and denied-permission tests before declaring a collector stable.
-- Prefer official provider documentation as the source of truth.
-- Keep provider payload details in metadata; downstream corpus consumers should depend on the normalized model.
-
-## Status
-
-`v0.1.0` is a working collector foundation, not a promise to collect every artifact from every provider.
-
-The next research milestone is to move DingTalk capabilities from `unknown` to either `verified user-delegated` or `verified admin-gated` endpoint by endpoint, without adding any local-client extraction path.
-
-## License
-
-MIT. See [`LICENSE`](LICENSE).
+MIT，详见 [LICENSE](LICENSE)。

@@ -4,7 +4,7 @@ Last reviewed: 2026-09-18.
 
 This document intentionally separates **API existence** from **who is allowed to authorize it**. A capability is not considered usable merely because an endpoint or CLI command exists.
 
-Authorization tiers used by 24hmyself:
+Authorization tiers used by 24hmoyu:
 
 | Tier | Meaning |
 |---|---|

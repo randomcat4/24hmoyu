@@ -3,7 +3,7 @@
 ## mbox
 
 ```bash
-24hmyself collect mbox ~/Downloads/All\ mail.mbox --output ./corpus
+24hmoyu collect mbox ~/Downloads/All\ mail.mbox --output ./corpus
 ```
 
 ## Feishu
@@ -11,7 +11,7 @@
 ```bash
 export FEISHU_ACCESS_TOKEN='...'
 
-24hmyself collect feishu \
+24hmoyu collect feishu \
   --chat oc_xxx \
   --doc doxc_xxx \
   --drive-file boxcn_xxx=report.pdf \
@@ -31,7 +31,7 @@ dws auth status --format json
 Then collect explicitly selected sources:
 
 ```bash
-24hmyself collect dingtalk \
+24hmoyu collect dingtalk \
   --group cid_xxx \
   --direct-user user123 \
   --doc 'https://alidocs.dingtalk.com/i/nodes/xxx' \

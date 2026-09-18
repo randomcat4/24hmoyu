@@ -1,8 +1,8 @@
 # DingTalk collector
 
-24hmyself integrates DingTalk through the officially open-sourced **DingTalk Workspace CLI (`dws`)** rather than copying or reimplementing its credential handling.
+24hmoyu integrates DingTalk through the officially open-sourced **DingTalk Workspace CLI (`dws`)** rather than copying or reimplementing its credential handling.
 
-This is deliberate: `dws` owns OAuth/device-flow login, profile selection, credential storage, domain allowlisting, permission checks, and auditing. 24hmyself only invokes read operations and normalizes their structured JSON results.
+This is deliberate: `dws` owns OAuth/device-flow login, profile selection, credential storage, domain allowlisting, permission checks, and auditing. 24hmoyu only invokes read operations and normalizes their structured JSON results.
 
 Upstream: https://github.com/DingTalk-Real-AI/dingtalk-workspace-cli
 
@@ -17,7 +17,7 @@ dws auth login
 dws auth status --format json
 ```
 
-If the organization has not enabled CLI access, follow DingTalk's official approval flow. 24hmyself will not attempt a bypass.
+If the organization has not enabled CLI access, follow DingTalk's official approval flow. 24hmoyu will not attempt a bypass.
 
 ## Implemented read paths
 
@@ -32,7 +32,7 @@ dws chat message list \
   --format json
 ```
 
-24hmyself continues pages while `hasMore=true`, advances the time cursor from the last returned `createTime`, and relies on corpus de-duplication at page boundaries.
+24hmoyu continues pages while `hasMore=true`, advances the time cursor from the last returned `createTime`, and relies on corpus de-duplication at page boundaries.
 
 ### Direct-message history
 
@@ -52,7 +52,7 @@ dws chat message list \
   --format json
 ```
 
-DWS maps group and direct-history reads to distinct underlying Workspace capabilities. 24hmyself intentionally stays on the supported CLI surface instead of reproducing undocumented transport details.
+DWS maps group and direct-history reads to distinct underlying Workspace capabilities. 24hmoyu intentionally stays on the supported CLI surface instead of reproducing undocumented transport details.
 
 ### Cross-conversation history
 
@@ -76,7 +76,7 @@ dws doc info --node <node> --format json
 dws doc read --node <node> --format json
 ```
 
-24hmyself stores the Markdown/text projection as a normalized `Document`.
+24hmoyu stores the Markdown/text projection as a normalized `Document`.
 
 ### Drive files
 
@@ -93,7 +93,7 @@ The downloaded file becomes a normalized `Attachment` in the local corpus.
 
 DWS exposes real message-history capabilities, but message read projections may be lossy for rich/card/file messages. Upstream reports have documented cases where rich structure or complete file metadata is not present in the history projection.
 
-Because of that, 24hmyself does **not** claim a generic "download every chat attachment" capability. When a DWS message projection visibly contains identifiers such as `fileId`, `resourceId`, or `mediaId`, the collector records them as unresolved attachment metadata. It does not invent a download URL or guess an undocumented RPC.
+Because of that, 24hmoyu does **not** claim a generic "download every chat attachment" capability. When a DWS message projection visibly contains identifiers such as `fileId`, `resourceId`, or `mediaId`, the collector records them as unresolved attachment metadata. It does not invent a download URL or guess an undocumented RPC.
 
 Relevant upstream discussions include:
 

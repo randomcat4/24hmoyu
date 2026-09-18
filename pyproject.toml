@@ -3,13 +3,13 @@ requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
 [project]
-name = "24hmyself"
+name = "24hmoyu"
 version = "0.1.0"
 description = "Privacy-first collectors for officially authorized enterprise data"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
-authors = [{name = "24hmyself contributors"}]
+authors = [{name = "24hmoyu contributors"}]
 dependencies = [
   "httpx>=0.27,<1",
 ]
@@ -20,6 +20,7 @@ dev = [
 ]
 
 [project.scripts]
+24hmoyu = "twentyfour_myself.cli:main"
 24hmyself = "twentyfour_myself.cli:main"
 
 [tool.hatch.build.targets.wheel]

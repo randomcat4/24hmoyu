@@ -1,4 +1,4 @@
-"""24hmyself: privacy-first enterprise-data collectors."""
+"""24hmoyu: privacy-first enterprise-data collectors."""
 
 from .models import Attachment, AuthorizationTier, Capability, Document, Message
 

@@ -15,7 +15,7 @@ from .corpus import CorpusStore
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="24hmyself",
+        prog="24hmoyu",
         description="Collect officially authorized enterprise data into a local corpus.",
     )
     sub = parser.add_subparsers(dest="command", required=True)

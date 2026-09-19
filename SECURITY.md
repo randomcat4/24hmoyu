@@ -40,3 +40,18 @@ Do not publish or commit `memory.sqlite3`, its WAL/SHM sidecars, dream prompts c
 ## Reporting
 
 If you find a vulnerability, avoid including real enterprise data or credentials in a public issue. Provide a minimal reproduction with synthetic data.
+
+
+## Dream model boundary
+
+Collection and recall are local operations. The `dream` command is opt-in and
+sends a batch of corpus records plus selected existing memories to the model
+endpoint configured by `MOYU_LLM_BASE_URL`. Choose an endpoint whose data
+handling is acceptable for the corpus.
+
+`--dry-run` still sends that data to the configured model; it only disables
+local writes.
+
+Treat corpus content as untrusted input. The dream engine validates model
+operations before committing them and rejects references to records or memory
+IDs outside the data supplied for that dream batch.

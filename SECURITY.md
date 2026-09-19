@@ -31,6 +31,12 @@ Never commit:
 
 Use environment variables or the platform's official credential store.
 
+## Local memory
+
+`memory.sqlite3` is derived from private corpus data and should be treated as equally sensitive as the raw chat/mail corpus. It is local-only by default, ignored by git, and created with restrictive file permissions on platforms that support POSIX permissions.
+
+Do not publish or commit `memory.sqlite3`, its WAL/SHM sidecars, dream prompts containing corpus excerpts, or model request/response logs that contain private work data.
+
 ## Reporting
 
 If you find a vulnerability, avoid including real enterprise data or credentials in a public issue. Provide a minimal reproduction with synthetic data.

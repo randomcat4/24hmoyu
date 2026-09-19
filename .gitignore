@@ -18,6 +18,9 @@ corpus/
 attachments/
 exports/
 secrets/
+*.sqlite3
+*.sqlite3-*
 
 # Local configuration
+24hmoyu.local.json
 24hmyself.local.json

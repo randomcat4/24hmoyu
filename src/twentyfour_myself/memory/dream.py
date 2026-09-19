@@ -263,7 +263,7 @@ def _parse_operations(text: str) -> list[MemoryOperation]:
             lines = lines[1:]
         if lines and lines[-1].strip() == fence:
             lines = lines[:-1]
-        text = "\\n".join(lines).strip()
+        text = "\n".join(lines).strip()
 
     payload = json.loads(text)
     raw_ops = (

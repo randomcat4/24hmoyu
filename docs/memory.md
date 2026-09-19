@@ -54,6 +54,21 @@ Preview without writing memory:
 24hmoyu dream --corpus ./corpus --dry-run
 ~~~
 
+## Privacy boundary
+
+`collect`, `recall`, and local `memory` inspection do not require sending the
+corpus to an LLM. `dream` is different: when explicitly invoked, it sends the
+current batch of corpus records and a small candidate set of existing memories
+to the configured OpenAI-compatible model endpoint.
+
+Use a provider/end-point appropriate for the sensitivity of the corpus. A
+`--dry-run` still calls the model; it only prevents local memory/checkpoint
+writes.
+
+Corpus text is treated as untrusted data. Dream output is rejected if it tries
+to cite corpus refs outside the current batch or modify memories outside the
+candidate set supplied to the model.
+
 ## What deserves memory
 
 The dream prompt deliberately avoids transcript summarization. Good durable
@@ -91,10 +106,12 @@ required notice in THIRD_PARTY_NOTICES.md.
 
 The architecture is also informed by:
 
-- Letta/Letta Code: immutable recall experience, editable memory, procedural
-  skills, and background dreaming;
-- Mem0: retrieve relevant old memories and ask a model to decide whether new
-  evidence should add, update, or delete memory.
+- Letta/Letta Code: keep recall experience separate from editable memory and
+  reusable skills, and run background reflection/dreaming over recent experience;
+- Mem0: retrieve relevant existing memories before extraction/consolidation.
+  Mem0's current v3 documentation describes an ADD-only extraction lifecycle,
+  so 24hmoyu does not copy that lifecycle. We keep explicit update/delete
+  because enterprise facts and project decisions can be superseded.
 
 24hmoyu does not vendor Letta or Mem0 code and does not require LangGraph, a
 vector database, or a hosted memory service.

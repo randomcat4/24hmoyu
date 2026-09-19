@@ -119,16 +119,6 @@ class MemoryStore:
                 """,
                 (*params, limit),
             ).fetchall()
-            if not rows:
-                rows = db.execute(
-                    """
-                    SELECT * FROM memories
-                    WHERE deleted_at IS NULL
-                    ORDER BY updated_at DESC, importance DESC
-                    LIMIT ?
-                    """,
-                    (limit,),
-                ).fetchall()
         return [self._row_to_item(row) for row in rows]
 
     def get_state(self, key: str, default: str | None = None) -> str | None:

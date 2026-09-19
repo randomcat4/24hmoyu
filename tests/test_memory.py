@@ -106,3 +106,55 @@ def test_dream_checkpoint_moves_only_after_apply(tmp_path):
 
     again = engine.run()
     assert again.processed_records == 0
+
+
+
+def test_memory_search_miss_returns_empty(tmp_path):
+    store = MemoryStore(tmp_path)
+    store.apply_operations(
+        [
+            MemoryOperation(
+                action=MemoryAction.CREATE,
+                kind="project",
+                content="Project A uses Python",
+                source_refs=["x:message:1"],
+            )
+        ]
+    )
+
+    assert store.search("完全无关的主题") == []
+
+
+def test_dream_rejects_hallucinated_source_ref(tmp_path):
+    corpus = CorpusStore(tmp_path)
+    corpus.append(
+        [
+            Message(
+                source="x",
+                external_id="1",
+                text="Project A uses Python",
+            )
+        ]
+    )
+    memory = MemoryStore(tmp_path)
+
+    class BadModel:
+        def consolidate(self, records, existing):
+            return [
+                MemoryOperation(
+                    action=MemoryAction.CREATE,
+                    kind="decision",
+                    content="Invented",
+                    source_refs=["x:message:not-real"],
+                )
+            ]
+
+    engine = DreamEngine(corpus, memory, BadModel())
+
+    import pytest
+
+    with pytest.raises(ValueError):
+        engine.run()
+
+    assert memory.list() == []
+    assert memory.get_state(DreamEngine.STATE_KEY, "0") == "0"

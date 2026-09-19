@@ -69,6 +69,37 @@ description: >
 
 ---
 
+## 24hmoyu 资料接入（有本地 corpus 时优先）
+
+如果运行环境能够访问 24hmoyu 的本地 corpus，且用户没有明确要求只使用当前消息中的素材：
+
+1. 先确定本次周报的日期范围。
+2. **直接查询 corpus**，不要生成、保存或维护 `weekly-context.md`、`weekly-context.json` 或任何同类中间汇总文件。
+3. 本周“做了什么、何时做、产出了什么”的事实，以 `recall` 返回的原始记录为准。
+4. 只有在需要项目长期背景、历史决定、责任归属、长期依赖等上下文时，才查询 `memory`。
+5. memory 不是本周事实证据。若 memory 与本周 recall 冲突，以本周 recall 为准，并避免把旧记忆写成当前事实。
+6. 不因为存在 memory 就补写用户本周没有发生的工作。
+
+推荐调用：
+
+~~~bash
+24hmoyu recall \
+  --corpus <corpus-dir> \
+  --since <YYYY-MM-DD> \
+  --until <YYYY-MM-DD> \
+  --json
+~~~
+
+需要长期背景时再调用：
+
+~~~bash
+24hmoyu memory search "<项目/主题>" \
+  --corpus <corpus-dir> \
+  --json
+~~~
+
+如果无法访问本地 corpus，则退回到用户当前提供的文字、文件或聊天记录，不报错、不假定本地资料存在。
+
 ## Tier 1 · 正经人模式
 
 ### 核心原则

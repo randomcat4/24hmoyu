@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "24hmoyu"
-version = "0.1.0"
-description = "Privacy-first collectors for officially authorized enterprise data"
+version = "0.2.0"
+description = "Privacy-first work-data collectors with local recall and long-term memory consolidation"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}

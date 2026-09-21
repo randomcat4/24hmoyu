@@ -21,8 +21,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install
-        run: python -m pip install -e '.[dev]'
+        run: |
+          python -m pip install -e '.[dev]'
+          python -m pip install -e './voicekit[dev]'
       - name: Compile
-        run: python -m compileall -q src
+        run: |
+          python -m compileall -q src
+          python -m compileall -q voicekit/src
       - name: Test
-        run: pytest
+        run: |
+          pytest
+          pytest -q voicekit/tests

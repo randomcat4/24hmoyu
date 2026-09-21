@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "author-voice-kit"
+version = "0.1.0"
+description = "Portable author-voice profiling and adversarial evaluation toolkit"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<9"]
+
+[project.scripts]
+voicekit = "voicekit.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/voicekit"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
